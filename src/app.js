@@ -47,6 +47,7 @@ const exportIds = new NodeCache({ stdTTL: 3600 });
 
 const fastify = require('fastify')({
   logger: true,
+  trustProxy: Boolean(args.auth?.oidc),
 });
 
 fastify.decorate('args', args);

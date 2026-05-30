@@ -92,8 +92,17 @@ All options can be set via CLI flags or environment variables prefixed with `CW_
 | `--host`                           | `CW_HOST`                           | string  | `localhost`   | Host to run the server on                                       |
 | `--base-route`                     | `CW_BASE_ROUTE`                     | string  | —             | Base route prefix for all routes, e.g. `/app`                   |
 | `--app-name`                       | `CW_APP_NAME`                       | string  | `Compass Web` | Application name                                                |
-| `--basic-auth-username`            | `CW_BASIC_AUTH_USERNAME`            | string  | —             | Username for Basic HTTP authentication                          |
-| `--basic-auth-password`            | `CW_BASIC_AUTH_PASSWORD`            | string  | —             | Password for Basic HTTP authentication                          |
+| `--basic-auth-username`            | `CW_BASIC_AUTH_USERNAME`            | string  | —             | Legacy Basic HTTP auth (API only when OIDC is off)              |
+| `--basic-auth-password`            | `CW_BASIC_AUTH_PASSWORD`            | string  | —             | Legacy Basic HTTP auth password                                 |
+| `--oidc-issuer`                    | `CW_OIDC_ISSUER`                    | string  | —             | OIDC issuer URL (e.g. Keycloak realm)                           |
+| `--oidc-client-id`                 | `CW_OIDC_CLIENT_ID`                 | string  | —             | OIDC client id                                                  |
+| `--oidc-client-secret`             | `CW_OIDC_CLIENT_SECRET`             | string  | —             | OIDC client secret (omit for public clients)                    |
+| `--oidc-redirect-uri`              | `CW_OIDC_REDIRECT_URI`              | string  | _(derived)_   | Full callback URL; derived from request host if unset           |
+| `--oidc-scope`                     | `CW_OIDC_SCOPE`                     | string  | `openid profile email` | Scopes requested from the IdP                          |
+| `--oidc-post-logout-redirect-uri`  | `CW_OIDC_POST_LOGOUT_REDIRECT_URI`  | string  | —             | Redirect target after logout                                    |
+| `--oidc-allowed-groups`            | `CW_OIDC_ALLOWED_GROUPS`            | string  | —             | Comma-separated groups/roles allowed access (optional)          |
+| `--oidc-groups-claim`              | `CW_OIDC_GROUPS_CLAIM`              | string  | `groups`      | ID token claim holding the user groups/roles                    |
+| `--session-secret`                 | `CW_SESSION_SECRET`                 | string  | —             | Session cookie encryption secret (>=32 chars; required for OIDC) |
 | `--enable-edit-connections`        | `CW_ENABLE_EDIT_CONNECTIONS`        | boolean | `false`       | Allow users to add/edit connections in the UI                   |
 | `--master-password`                | `CW_MASTER_PASSWORD`                | string  | —             | Master password to encrypt/decrypt saved connection credentials |
 | `--enable-shell`                   | `CW_ENABLE_SHELL`                   | boolean | `false`       | Enable the Mongo Shell                                          |
@@ -121,6 +130,54 @@ CW_MONGO_URI="mongodb://localhost:27017" \
 CW_ENABLE_SHELL=true \
 CW_ENABLE_EDIT_CONNECTIONS=true \
 compass-web
+```
+
+## Access management
+
+Compass Web supports two authentication options:
+
+| Method | Scope | Use case |
+| ------ | ----- | -------- |
+| **OIDC** | UI, REST API, websockets | SSO via Keycloak, Auth0, Okta, Entra ID, etc. |
+| **Basic auth** (legacy) | REST API only | Simple API protection when OIDC is not configured |
+
+OIDC uses Authorization Code + PKCE with an encrypted session cookie. It
+protects the Compass tool itself, not MongoDB database credentials.
+
+### OIDC / OAuth (Keycloak, etc.)
+
+```bash
+compass-web \
+  --mongo-uri="mongodb://localhost:27017" \
+  --oidc-issuer="https://keycloak.example.com/realms/myrealm" \
+  --oidc-client-id="compass-web" \
+  --oidc-client-secret="<client-secret>" \
+  --oidc-redirect-uri="https://compass.example.com/auth/callback" \
+  --session-secret="a-random-string-of-at-least-32-characters"
+```
+
+Register `https://<host>/auth/callback` as a valid redirect URI in your IdP.
+When running behind TLS-terminating ingress, omit `--oidc-redirect-uri` if the
+ingress forwards `X-Forwarded-*` headers.
+
+Auth routes:
+
+- `/auth/login` — sign-in page with SSO button
+- `/auth/login/oidc` — start SSO flow
+- `/auth/callback` — OIDC redirect URI
+- `/auth/logout` — sign out
+- `/auth/me` — current session user
+
+### Legacy Basic auth (API only)
+
+When OIDC is **not** configured, `--basic-auth-username` and
+`--basic-auth-password` protect `/api` routes only (not the UI or websockets).
+
+```bash
+compass-web \
+  --mongo-uri="mongodb://localhost:27017" \
+  --basic-auth-username=admin \
+  --basic-auth-password=secret
 ```
 
 ## Build

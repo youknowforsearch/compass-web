@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in · <%= it.appName %></title>
+    <link rel="icon" href="<%= it.baseRoute ? it.baseRoute + '/' : '' %>favicon.svg" type="image/svg+xml" />
+    <link
+      href="https://fonts.cdnfonts.com/css/euclid-circular-a"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f7fa;
+        font-family: 'Euclid Circular A', sans-serif;
+        color: #1c2d38;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 420px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        padding: 32px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+        color: #00684a;
+      }
+
+      .subtitle {
+        margin: 0 0 24px;
+        color: #5c6c75;
+        font-size: 14px;
+      }
+
+      .error {
+        background: #fcebea;
+        color: #b71c1c;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 11px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        background: #00684a;
+        color: #fff;
+      }
+
+      .btn:hover {
+        background: #005a40;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Sign in</h1>
+      <p class="subtitle"><%= it.appName %></p>
+
+      <% if (it.error) { %>
+      <div class="error"><%= it.error %></div>
+      <% } %>
+
+      <a class="btn" href="<%= it.oidcLoginUrl %>">Continue with SSO</a>
+    </div>
+  </body>
+</html>
