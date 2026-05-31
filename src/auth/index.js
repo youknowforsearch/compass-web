@@ -72,6 +72,15 @@ function registerLegacyBasicAuth(fastify) {
     },
     authenticate: true,
   });
+
+  fastify.after(() => {
+    fastify.addHook('onRequest', (request, reply, done) => {
+      if (request.url.split('?')[0] === '/healthz') {
+        return done();
+      }
+      return fastify.basicAuth(request, reply, done);
+    });
+  });
 }
 
 /**
