@@ -63,4 +63,71 @@ describe('readCliArgs OIDC auth', () => {
       assert.throws(() => readCliArgs(), /oidc-client-id/);
     });
   });
+
+  it('throws when oidc-issuer is missing', () => {
+    withArgv(['--oidc-client-id', 'compass-web'], () => {
+      assert.throws(() => readCliArgs(), /oidc-issuer/);
+    });
+  });
+
+  it('throws when session-secret is too short', () => {
+    withArgv(
+      [
+        '--oidc-issuer',
+        'https://idp.example.com',
+        '--oidc-client-id',
+        'compass-web',
+        '--session-secret',
+        'too-short',
+      ],
+      () => {
+        assert.throws(() => readCliArgs(), /session-secret/);
+      }
+    );
+  });
+
+  it('parses allowed groups and optional OIDC settings', () => {
+    withArgv(
+      [
+        '--oidc-issuer',
+        'https://idp.example.com/realms/r',
+        '--oidc-client-id',
+        'compass-web',
+        '--oidc-client-secret',
+        'secret',
+        '--oidc-redirect-uri',
+        'https://compass.example.com/auth/callback',
+        '--oidc-post-logout-redirect-uri',
+        'https://compass.example.com/auth/login',
+        '--oidc-allowed-groups',
+        ' admins , developers ',
+        '--oidc-groups-claim',
+        'roles',
+        '--oidc-scope',
+        'openid email',
+        '--session-secret',
+        sessionSecret,
+      ],
+      () => {
+        const args = readCliArgs();
+        assert.ok(args.auth);
+        assert.deepStrictEqual(args.auth.oidc.allowedGroups, [
+          'admins',
+          'developers',
+        ]);
+        assert.strictEqual(args.auth.oidc.groupsClaim, 'roles');
+        assert.strictEqual(args.auth.oidc.scope, 'openid email');
+        assert.strictEqual(
+          args.auth.oidc.redirectUri,
+          'https://compass.example.com/auth/callback'
+        );
+        assert.strictEqual(
+          args.auth.oidc.postLogoutRedirectUri,
+          'https://compass.example.com/auth/login'
+        );
+        assert.strictEqual(args.auth.enabled, true);
+        assert.strictEqual(args.auth.sessionRequired, true);
+      }
+    );
+  });
 });

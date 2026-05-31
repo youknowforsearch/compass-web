@@ -19,7 +19,8 @@
     "bs": "npm run build-server",
     "build-server:production": "NODE_ENV=production rollup -c",
     "start": "node app.js",
-    "test": "mocha"
+    "test": "mocha",
+    "test:auth": "mocha --no-config 'src/auth/**/*.test.js' 'src/cli.test.js'"
   },
   "author": "Haohan Yang",
   "license": "SSPL",
