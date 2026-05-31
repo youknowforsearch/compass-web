@@ -18,7 +18,9 @@ async function registerSessionRoutes(fastify, { prefix, auth }) {
     }
 
     const returnTo =
-      typeof req.query.returnTo === 'string' ? req.query.returnTo : `${prefix}/`;
+      typeof req.query.returnTo === 'string'
+        ? req.query.returnTo
+        : `${prefix}/`;
     const error =
       typeof req.query.error === 'string' ? req.query.error : undefined;
 
@@ -27,7 +29,9 @@ async function registerSessionRoutes(fastify, { prefix, auth }) {
       baseRoute: fastify.args.baseRoute,
       returnTo,
       error,
-      oidcLoginUrl: `${prefix}/auth/login/oidc?returnTo=${encodeURIComponent(returnTo)}`,
+      oidcLoginUrl: `${prefix}/auth/login/oidc?returnTo=${encodeURIComponent(
+        returnTo
+      )}`,
     });
   });
 

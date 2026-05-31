@@ -94,7 +94,10 @@ describe('OIDC auth routes', () => {
     });
 
     assert.strictEqual(res.statusCode, 302);
-    assert.match(res.headers.location, /^https:\/\/idp\.example\.com\/auth\?state=/);
+    assert.match(
+      res.headers.location,
+      /^https:\/\/idp\.example\.com\/auth\?state=/
+    );
     assert.ok(res.headers['set-cookie']);
   });
 
@@ -134,7 +137,9 @@ describe('OIDC auth routes', () => {
 
     const callback = await app.inject({
       method: 'GET',
-      url: `/auth/callback?code=test-code&state=${encodeURIComponent(oidcStateFromStart(start))}`,
+      url: `/auth/callback?code=test-code&state=${encodeURIComponent(
+        oidcStateFromStart(start)
+      )}`,
       headers: { cookie: start.headers['set-cookie'] },
     });
 
@@ -207,7 +212,9 @@ describe('OIDC auth routes', () => {
 
     const callback = await app.inject({
       method: 'GET',
-      url: `/auth/callback?code=bad&state=${encodeURIComponent(oidcStateFromStart(start))}`,
+      url: `/auth/callback?code=bad&state=${encodeURIComponent(
+        oidcStateFromStart(start)
+      )}`,
       headers: { cookie: start.headers['set-cookie'] },
     });
 

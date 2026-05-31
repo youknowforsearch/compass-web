@@ -38,7 +38,10 @@ describe('readCliArgs OIDC auth', () => {
       () => {
         const args = readCliArgs();
         assert.ok(args.auth);
-        assert.strictEqual(args.auth.oidc.issuer, 'https://idp.example.com/realms/r');
+        assert.strictEqual(
+          args.auth.oidc.issuer,
+          'https://idp.example.com/realms/r'
+        );
         assert.strictEqual(args.auth.oidc.clientId, 'compass-web');
       }
     );
@@ -46,12 +49,7 @@ describe('readCliArgs OIDC auth', () => {
 
   it('throws when session-secret is missing for OIDC', () => {
     withArgv(
-      [
-        '--oidc-issuer',
-        'https://idp.example.com',
-        '--oidc-client-id',
-        'cw',
-      ],
+      ['--oidc-issuer', 'https://idp.example.com', '--oidc-client-id', 'cw'],
       () => {
         assert.throws(() => readCliArgs(), /session-secret/);
       }

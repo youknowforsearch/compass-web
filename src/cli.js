@@ -239,9 +239,7 @@ function buildAuthConfig(args, oidcPartial) {
   }
 
   if (!args.sessionSecret || args.sessionSecret.length < 32) {
-    throw new Error(
-      'OIDC requires --session-secret (at least 32 characters)'
-    );
+    throw new Error('OIDC requires --session-secret (at least 32 characters)');
   }
 
   return {

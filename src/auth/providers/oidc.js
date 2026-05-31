@@ -77,13 +77,15 @@ async function registerOidcProvider(fastify, { prefix, oidc }) {
         const groupList = Array.isArray(groups)
           ? groups
           : groups
-            ? [groups]
-            : [];
+          ? [groups]
+          : [];
         const allowed = oidc.allowedGroups.some((g) => groupList.includes(g));
         if (!allowed) {
           req.session.delete();
           reply.redirect(
-            `${prefix}/auth/login?error=${encodeURIComponent('You are not a member of an authorized group')}`
+            `${prefix}/auth/login?error=${encodeURIComponent(
+              'You are not a member of an authorized group'
+            )}`
           );
           return;
         }
