@@ -22,7 +22,7 @@ async function registerSessionRoutes(fastify, { prefix, auth }) {
     const error =
       typeof req.query.error === 'string' ? req.query.error : undefined;
 
-    reply.view('login.eta', {
+    return reply.view('login.eta', {
       appName: fastify.args.appName,
       baseRoute: fastify.args.baseRoute,
       returnTo,
@@ -49,7 +49,7 @@ async function registerSessionRoutes(fastify, { prefix, auth }) {
       }
     }
 
-    reply.redirect(`${prefix}/auth/login`);
+    return reply.redirect(`${prefix}/auth/login`);
   });
 
   fastify.get(`${prefix}/auth/me`, async (req, reply) => {
@@ -58,7 +58,7 @@ async function registerSessionRoutes(fastify, { prefix, auth }) {
       reply.code(401).send({ error: 'Unauthenticated' });
       return;
     }
-    reply.send({ user });
+    return reply.send({ user });
   });
 }
 

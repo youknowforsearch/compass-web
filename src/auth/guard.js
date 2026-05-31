@@ -39,7 +39,7 @@ function registerAuthGuard(fastify, prefix) {
     }
 
     const returnTo = encodeURIComponent(req.url);
-    reply.redirect(`${prefix}/auth/login?returnTo=${returnTo}`);
+    return reply.redirect(`${prefix}/auth/login?returnTo=${returnTo}`);
   });
 }
 

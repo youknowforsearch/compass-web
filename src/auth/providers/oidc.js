@@ -51,7 +51,7 @@ async function registerOidcProvider(fastify, { prefix, oidc }) {
     });
 
     const url = client.buildAuthorizationUrl(config, parameters);
-    reply.redirect(url.href);
+    return reply.redirect(url.href);
   });
 
   fastify.get(`${prefix}/auth/callback`, async (req, reply) => {
@@ -100,11 +100,11 @@ async function registerOidcProvider(fastify, { prefix, oidc }) {
       req.session.set('id_token', tokens.id_token);
       req.session.set('oidc_tx', undefined);
 
-      reply.redirect(tx.returnTo || `${prefix}/`);
+      return reply.redirect(tx.returnTo || `${prefix}/`);
     } catch (err) {
       req.log.error({ err }, 'OIDC callback failed');
       req.session.delete();
-      reply.redirect(
+      return reply.redirect(
         `${prefix}/auth/login?error=${encodeURIComponent('SSO sign-in failed')}`
       );
     }
