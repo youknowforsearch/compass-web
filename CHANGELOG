@@ -1,3 +1,19 @@
+## Unreleased
+
+### Added
+
+- OIDC/OAuth authentication (Authorization Code + PKCE) via Keycloak and other
+  OpenID Connect providers.
+- Session-based login page at `/auth/login` and global auth guard protecting
+  the UI, REST API, and MongoDB/shell websockets.
+
+### Changed
+
+- When OIDC is enabled, `trustProxy` is turned on for correct redirect URIs
+  behind a reverse proxy or ingress.
+- Legacy `--basic-auth-*` remains available for API-only protection when OIDC
+  is not configured.
+
 ## 0.4.2 - 2026-05-02
 
 ### Changed

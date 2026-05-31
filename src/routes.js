@@ -49,7 +49,7 @@ module.exports = function (fastify, _opts, done) {
     settings.enableCreatingNewConnections = true;
   }
 
-  if (args.basicAuth) {
+  if (args.basicAuth && !args.auth?.sessionRequired) {
     fastify.addHook('onRequest', fastify.basicAuth);
   }
 

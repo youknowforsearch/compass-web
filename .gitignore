@@ -8,5 +8,6 @@ connections.json
 connections-*.json
 connections.salt
 connections-*.salt
+connections-*.salt
 test-encryption.json
 test-encryption.salt

@@ -31,7 +31,49 @@ function readCliArgs() {
     })
     .option('basic-auth-password', {
       type: 'string',
-      description: 'Password for Basic HTTP authentication scheme',
+      description: 'Password for Basic HTTP authentication (legacy; API only).',
+    })
+    .option('oidc-issuer', {
+      type: 'string',
+      description:
+        'OIDC issuer URL, e.g. https://keycloak.example.com/realms/myrealm. Enables OIDC/OAuth login.',
+    })
+    .option('oidc-client-id', {
+      type: 'string',
+      description: 'OIDC client id',
+    })
+    .option('oidc-client-secret', {
+      type: 'string',
+      description: 'OIDC client secret. Omit for public clients.',
+    })
+    .option('oidc-redirect-uri', {
+      type: 'string',
+      description:
+        'Full OIDC callback URL, e.g. https://compass.example.com/auth/callback. If unset, it is derived from the request host and base route.',
+    })
+    .option('oidc-scope', {
+      type: 'string',
+      description: 'OIDC scopes to request',
+      default: 'openid profile email',
+    })
+    .option('oidc-post-logout-redirect-uri', {
+      type: 'string',
+      description: 'Where the IdP should redirect after logout',
+    })
+    .option('oidc-allowed-groups', {
+      type: 'string',
+      description:
+        'Comma-separated list of groups/roles allowed to access the app. If unset, any authenticated user is allowed.',
+    })
+    .option('oidc-groups-claim', {
+      type: 'string',
+      description: 'ID token claim that holds the user groups/roles',
+      default: 'groups',
+    })
+    .option('session-secret', {
+      type: 'string',
+      description:
+        'Secret used to encrypt the session cookie (at least 32 characters). Required when OIDC is enabled.',
     })
     .option('app-name', {
       type: 'string',
@@ -144,8 +186,70 @@ function readCliArgs() {
     };
   }
 
+  // OIDC issuer/client settings.
+  let oidcPartial = null;
+
+  if (args.oidcIssuer || args.oidcClientId) {
+    const missing = [];
+
+    if (!args.oidcIssuer) {
+      missing.push('--oidc-issuer');
+    }
+    if (!args.oidcClientId) {
+      missing.push('--oidc-client-id');
+    }
+
+    if (missing.length) {
+      throw new Error(
+        `OIDC is misconfigured. Missing or invalid: ${missing.join(', ')}`
+      );
+    }
+
+    oidcPartial = {
+      issuer: args.oidcIssuer,
+      clientId: args.oidcClientId,
+      clientSecret: args.oidcClientSecret || undefined,
+      redirectUri: args.oidcRedirectUri || undefined,
+      scope: args.oidcScope,
+      postLogoutRedirectUri: args.oidcPostLogoutRedirectUri || undefined,
+      allowedGroups: args.oidcAllowedGroups
+        ? args.oidcAllowedGroups
+            .split(',')
+            .map((g) => g.trim())
+            .filter(Boolean)
+        : null,
+      groupsClaim: args.oidcGroupsClaim,
+    };
+  }
+
+  const auth = buildAuthConfig(args, oidcPartial);
+
   const baseRoute = args.baseRoute.trim().replace(/^\/+|\/+$/g, '');
-  return { ...args, mongoURIs, basicAuth, baseRoute };
+  return { ...args, mongoURIs, basicAuth, auth, baseRoute };
+}
+
+/**
+ * @param {Record<string, any>} args
+ * @param {object | null} oidcPartial
+ * @returns {import('./auth').AuthConfig | null}
+ */
+function buildAuthConfig(args, oidcPartial) {
+  if (!oidcPartial) {
+    return null;
+  }
+
+  if (!args.sessionSecret || args.sessionSecret.length < 32) {
+    throw new Error(
+      'OIDC requires --session-secret (at least 32 characters)'
+    );
+  }
+
+  return {
+    enabled: true,
+    sessionRequired: true,
+    sessionSecret: args.sessionSecret,
+    oidc: oidcPartial,
+  };
 }
 
 module.exports = { readCliArgs };
