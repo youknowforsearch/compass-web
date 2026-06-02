@@ -63,16 +63,13 @@ module.exports = function (fastify, _opts, done) {
       appName: args.appName,
       preferences: {
         ...preferences,
-        enableGenAIFeaturesAtlasOrg: preferences.enableGenAi,
-        enableGenAIFeaturesAtlasProject: preferences.enableGenAi,
-        enableGenAISampleDocumentPassing:
-          preferences.enableGenAISampleDocumentPassing,
+        enableGenAIFeaturesAtlasOrg: preferences.enableGenAIFeatures,
+        enableGenAIFeaturesAtlasProject: preferences.enableGenAIFeatures,
         enableGenAISampleDocumentPassingOnAtlasProject:
           preferences.enableGenAISampleDocumentPassing,
-        optInDataExplorerGenAIFeatures:
-          preferences.optInDataExplorerGenAIFeatures ?? false,
+        optInDataExplorerGenAIFeatures: preferences.enableGenAIFeatures,
         cloudFeatureRolloutAccess: {
-          GEN_AI_COMPASS: preferences.enableGenAi,
+          GEN_AI_COMPASS: preferences.enableGenAIFeatures,
         },
         wsBaseUrl: args.baseRoute ? '/' + args.baseRoute : '',
         cloudBaseUrl: args.baseRoute ? `/${args.baseRoute}/api` : '/api',
