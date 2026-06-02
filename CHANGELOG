@@ -1,4 +1,4 @@
-## Unreleased
+## 0.5.0 - 2026-06-02
 
 ### Added
 
@@ -9,10 +9,9 @@
 
 ### Changed
 
+- Fixed GenAI UI not showing bug.
 - When OIDC is enabled, `trustProxy` is turned on for correct redirect URIs
   behind a reverse proxy or ingress.
-- Legacy `--basic-auth-*` remains available for API-only protection when OIDC
-  is not configured.
 
 ## 0.4.2 - 2026-05-02
 
