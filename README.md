@@ -24,7 +24,7 @@ The following features from Compass Desktop have been ported to Compass Web.
 - MongoDB connections edit (since 0.4.0)
 - Mongo shell (since 0.5.0)
 
-## 📦 Installation
+## Installation
 
 - npm
 
@@ -113,36 +113,9 @@ All options can be set via CLI flags or environment variables prefixed with `CW_
 | `--query-system-prompt`            | `CW_QUERY_SYSTEM_PROMPT`            | string  | _(built-in)_  | System prompt for query generation                              |
 | `--aggregation-system-prompt`      | `CW_AGGREGATION_SYSTEM_PROMPT`      | string  | _(built-in)_  | System prompt for aggregation generation                        |
 
-**Example — multiple connections with Basic Auth:**
-
-```bash
-compass-web \
-  --mongo-uri="mongodb://db1:27017 mongodb://db2:27017" \
-  --port=3000 \
-  --basic-auth-username=admin \
-  --basic-auth-password=secret
-```
-
-**Example — enable shell and connection editing via environment variables:**
-
-```bash
-CW_MONGO_URI="mongodb://localhost:27017" \
-CW_ENABLE_SHELL=true \
-CW_ENABLE_EDIT_CONNECTIONS=true \
-compass-web
-```
-
 ## Access management
 
-Compass Web supports two authentication options:
-
-| Method | Scope | Use case |
-| ------ | ----- | -------- |
-| **OIDC** | UI, REST API, websockets | SSO via Keycloak, Auth0, Okta, Entra ID, etc. |
-| **Basic auth** (legacy) | REST API only | Simple API protection when OIDC is not configured |
-
-OIDC uses Authorization Code + PKCE with an encrypted session cookie. It
-protects the Compass tool itself, not MongoDB database credentials.
+Compass Web supports two authentication options: Basic auth and OIDC. OIDC uses Authorization Code + PKCE with an encrypted session cookie. Authentication protects the Compass Web itself, not MongoDB database credentials.
 
 ### OIDC / OAuth (Keycloak, etc.)
 
@@ -168,11 +141,8 @@ Auth routes:
 - `/auth/logout` — sign out
 - `/auth/me` — current session user
 
-### Legacy Basic auth (API only)
-
-When OIDC is **not** configured, `--basic-auth-username` and
-`--basic-auth-password` protect `/api` routes only (not the UI or websockets).
-
+### Basic auth
+Set `--basic-auth-username` and `--basic-auth-password`:
 ```bash
 compass-web \
   --mongo-uri="mongodb://localhost:27017" \
