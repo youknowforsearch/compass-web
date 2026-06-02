@@ -44,7 +44,7 @@ function readCliArgs() {
     })
     .option('oidc-client-secret', {
       type: 'string',
-      description: 'OIDC client secret. Omit for public clients.',
+      description: 'OIDC client secret.',
     })
     .option('oidc-redirect-uri', {
       type: 'string',
